@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>guesser - a learning guessing game</title>
+    <link rel="stylesheet" href="base.css">
+    <script src="angular.min.js"></script>
+  </head>
+  
+  <body>
+    <h1>guesser - a learning guessing game</h1>
+    <div ng-app="" ng-controller="myController">
+
+      <!-- First view, the welcome screen: -->
+      <div ng-show="view === 'welcome'">
+        <h2>Welcome, think of a thing or an animal, I will try to
+          guess it!</h3>
+
+      <p>But first, enter your name: <input type="text" ng-model="name">,
+      and click <button ng-click="update()">Start</button> when you are
+      ready.</p>
+      </div>
+
+      <!-- Second view, the questions screen: -->
+      <div ng-show="view === 'question'">
+        <h2>{{name}}, please answer the following question:</h2>
+
+        <p ng-bind="theQuestion"></p>
+        <p><button ng-bind="theAnswer1" 
+                   ng-click="answer(current.goto1)"></button>
+           <button ng-bind="theAnswer2" 
+                   ng-click="answer(current.goto2)"></button></p>
+      </div>
+
+      <!-- Third view, the guessing screen: -->
+      <div ng-show="view === 'guess'">
+        <h2>{{name}}, I think I know what you guessed:</h2>
+
+        <p>Is it {{theGuess}}?</p>
+        <p><button ng-click="yes()">Yes</button>
+           <button ng-click="no()">No</button></p>
+
+        <p ng-show="guessedRight">Ha! Got you! Click
+        <button ng-click="restart()">here</button> to play again.</p>
+
+      </div>
+
+      <!-- Fourth view, the learning screen: -->
+      <div ng-show="view === 'learning'">
+
+      </div>
+    </div>
+    <script>
+      function myController($scope, $http) {
+        $scope.baseurl = "http://localhost:8529/_db/_system/dev/guesser/";
+        $scope.name = "";
+
+        $scope.restart = function () {
+          $scope.currentKey = "root";
+          $http.get($scope.baseurl + "get/root")
+            .success(function(response) {
+                       console.log(response);
+                       $scope.current = response;
+                     })
+            .error(function(response) {
+                     console.log(response);
+                     $scope.current = {};
+                     alert("AJAX call failed");
+                   });
+            $scope.view = "welcome";
+        }
+
+        $scope.restart();
+
+        $scope.update = function () {
+          if (! $scope.current.isLeaf) {
+            $scope.theQuestion = $scope.current.question;
+            $scope.theAnswer1 = $scope.current.answer1;
+            $scope.theAnswer2 = $scope.current.answer2;
+            $scope.view = "question";
+          }
+          else {
+            $scope.theGuess = $scope.current.guess;
+            $scope.guessedRight = false;
+            $scope.view = "guess";
+          }
+        }
+
+        $scope.yes = function () {
+          $scope.guessedRight = true;
+        }
+
+        $scope.answer = function (newkey) {
+          $http.get($scope.baseurl + "get/"+newkey)
+            .success(function(response) {
+                       console.log(response);
+                       $scope.current = response;
+                       $scope.currentKey = newkey;
+                       $scope.update();
+                     })
+            .error(function(response) {
+                     console.log(response);
+                     alert("AJAX call failed");
+                   });
+        }
+          
+        $scope.addEntry = function () {
+          var n = {id:$scope.newid, value:$scope.newvalue};
+          var promise = $http["post"]($scope.baseurl + "newentry", n);
+          promise.success(function(response) {
+                            if (response.error !== false) {
+                              alert(JSON.stringify(response));
+                            }
+                            else {
+                              n._key = response._key;
+                              $scope.list.push(n);
+                            }
+                          });
+          promise.error(function(response) {
+                          alert("AJAX call to add element failed");
+                        });
+          $scope.newid = "";
+          $scope.newvalue = "";
+        };
+      }
+    </script>
+  </body>
+</html> 
