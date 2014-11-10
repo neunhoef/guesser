@@ -9,7 +9,7 @@ var concat = require("concat-stream");
 var arango = require("arango");
 var db = new arango.Connection("http://localhost:8529"); // configure server
 db = db.use("/_system");                                 // configure database
-var collectionName = "dev_guesser_questions";            // configure collection
+var collectionName = "guesser_questions";                // configure collection
 
 ////////////////////////////////////////////////////////////////////////////////
 /// An express app:
@@ -22,18 +22,19 @@ var app = express();
 /// Static content:
 ////////////////////////////////////////////////////////////////////////////////
 
-function installStatic (filename, contenttype) {
-  app.get("/"+filename, function (req, res) {
+function installStatic (route, filename, contenttype) {
+  app.get(route, function (req, res) {
     res.type(contenttype);
     res.sendFile(filename, {root: "."});
   });
 }
 
-installStatic("index.html", "text/html");
-installStatic("bg.png", "image/png");
-installStatic("base.css", "text/css");
-installStatic("angular.min.js", "application/javascript");
-installStatic("guesser_controller.js", "application/javascript");
+installStatic("/", "index.html", "text/html");
+installStatic("/index.html", "index.html", "text/html");
+installStatic("/base.css", "base.css", "text/css");
+installStatic("/angular.min.js", "angular.min.js", "application/javascript");
+installStatic("/guesser_controller.js", "guesser_controller.js", 
+              "application/javascript");
 
 ////////////////////////////////////////////////////////////////////////////////
 /// AJAX services:
