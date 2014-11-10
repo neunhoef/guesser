@@ -41,7 +41,6 @@ installStatic("guesser_controller.js", "application/javascript");
 
 app.get("/get/:key", function (req, res) {
   var key = req.param("key");
-  console.log("/get called, key is ", key);
   db.document.get(collectionName+"/"+key)
     .done( function(data) {
              res.json(data);
@@ -53,12 +52,9 @@ app.get("/get/:key", function (req, res) {
 
 // This is just a trampoline to the Foxx app:
 app.put("/put", function (req, res) {
-  console.log("Content-Type of request is:", req.get("Content-Type"));
   req.pipe(concat( function(body) {
-    console.log("/put called with argument ", JSON.stringify(body.toString()));
     db.put("/dev/guesser/put", JSON.parse(body.toString()))
       .done(function(result) {
-        console.log("Result is", JSON.stringify(result));
         res.send(result);
       });
   }));
@@ -71,5 +67,5 @@ app.put("/put", function (req, res) {
 var server = app.listen(8000, function () {
   var host = server.address().address
   var port = server.address().port
-  console.log('Example app listening at http://%s:%s', host, port)
+  console.log('Guesser app server listening at http://%s:%s', host, port)
 });

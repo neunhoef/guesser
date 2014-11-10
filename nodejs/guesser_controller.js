@@ -73,6 +73,7 @@ app.controller("guesserController", function ($scope, $http) {
       $scope.userQuestion += "?";
     }
     var a = { oldLeaf: $scope.current._key,
+              oldLeafRev: $scope.current._rev,
               newQuestion: {
                 question: $scope.userQuestion,
                 answer1:  $scope.answerOld,
@@ -89,7 +90,9 @@ app.controller("guesserController", function ($scope, $http) {
       .success(function(response) {
                  console.log(response);
                  if (response.error === true) {
-                   alert("Could not submit new question!");
+                   alert("Could not submit new question! "+
+                         "This leaf was already modified!");
+                   $scope.restart();
                  }
                  else {
                    $scope.confirmed = true;

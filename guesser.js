@@ -39,18 +39,17 @@
         },
         action: function () {
           var oldLeaf = coll.document(b.oldLeaf);
-          log(JSON.stringify(oldLeaf));
+          if (oldLeaf._rev !== b.oldLeafRev) {
+            log("Leaf was already changed!");
+            throw {"error":true, "errorMessage": "Leaf was already changed"};
+          }
           var oldParent = coll.document(oldLeaf.parent);
-          log(JSON.stringify(oldParent));
           b.newQuestion.parent = oldLeaf.parent;
           var newQuestion = coll.insert(b.newQuestion);
-          log(JSON.stringify(newQuestion));
           b.newLeaf.parent = newQuestion._key;
           var newLeaf = coll.insert(b.newLeaf);
-          log(JSON.stringify(newLeaf));
           coll.update(newQuestion._key, { goto2: newLeaf._key });
           coll.update(oldLeaf._key, {parent: newQuestion._key});
-          log("Updates OK");
           if (oldParent.goto1 === b.oldLeaf) {
             coll.update(oldParent._key, { goto1: newQuestion._key });
           }
