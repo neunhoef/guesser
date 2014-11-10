@@ -1,6 +1,6 @@
 var app = angular.module("guesser", []);
 
-app.controller("myController", function myController($scope, $http) {
+app.controller("guesserController", function ($scope, $http) {
   $scope.name = "";
 
   $scope.restart = function () {
