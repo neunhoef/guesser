@@ -10,7 +10,7 @@
   
   <body>
     <h1>guesser - a guessing game that learns</h1>
-    <div ng-app="" ng-controller="myController">
+    <div ng-app="guesser" ng-controller="myController">
 
       <!-- First view, the welcome screen: -->
       <div ng-show="view === 'welcome'">
@@ -70,109 +70,6 @@
         </div>
       </div>
     </div>
-    <script>
-      function myController($scope, $http) {
-        $scope.baseurl = "http://192.168.10.116:8529/_db/_system/dev/guesser/";
-        $scope.name = "";
-
-        $scope.restart = function () {
-          $scope.currentKey = "root";
-          $http.get($scope.baseurl + "get/root")
-            .success(function(response) {
-                       console.log(response);
-                       $scope.current = response;
-                     })
-            .error(function(response) {
-                     console.log(response);
-                     $scope.current = {};
-                     alert("AJAX call failed");
-                   });
-            $scope.view = "welcome";
-        }
-
-        $scope.restart();
-
-        $scope.update = function () {
-          if (! $scope.current.isLeaf) {
-            $scope.theQuestion = $scope.current.question;
-            $scope.theAnswer1 = $scope.current.answer1;
-            $scope.theAnswer2 = $scope.current.answer2;
-            $scope.view = "question";
-          }
-          else {
-            $scope.theGuess = $scope.current.guess;
-            $scope.guessedRight = false;
-            $scope.view = "guess";
-          }
-        }
-
-        $scope.answer = function (newkey) {
-          $http.get($scope.baseurl + "get/"+newkey)
-            .success(function(response) {
-                       console.log(response);
-                       $scope.current = response;
-                       $scope.currentKey = newkey;
-                       $scope.update();
-                     })
-            .error(function(response) {
-                     console.log(response);
-                     alert("AJAX call failed");
-                   });
-        }
-          
-        $scope.yes = function () {
-          $scope.guessedRight = true;
-        }
-
-        $scope.no = function () {
-          $scope.oldThing = $scope.current.guess;
-          $scope.userThing = "";
-          $scope.userQuestion = "";
-          $scope.answerOld = "";
-          $scope.answerNew = "";
-          $scope.confirmed = false;
-          $scope.view = "learning";
-        }
-
-        $scope.submit = function () {
-          if ($scope.answerOld === $scope.answerNew ||
-              $scope.answerOld === "" ||
-              $scope.answerNew === "") {
-            alert("Old and new answer must be different and not empty");
-            return;
-          }
-          if ($scope.userQuestion[$scope.userQuestion.length-1] !== "?") {
-            $scope.userQuestion += "?";
-          }
-          var a = { oldLeaf: $scope.current._key,
-                    newQuestion: {
-                      question: $scope.userQuestion,
-                      answer1:  $scope.answerOld,
-                      answer2:  $scope.answerNew,
-                      goto1:    $scope.current._key,
-                      isLeaf:   false
-                    },
-                    newLeaf: { 
-                      isLeaf: true,
-                      guess: $scope.userThing
-                    }
-                  };
-          $http.put($scope.baseurl + "put", a)
-            .success(function(response) {
-                       console.log(response);
-                       if (response.error === true) {
-                         alert("Could not submit new question!");
-                       }
-                       else {
-                         $scope.confirmed = true;
-                       }
-                     })
-            .error(function(response) {
-                     console.log(response);
-                     alert("AJAX call failed, cannot update");
-                   });
-        }
-      }
-    </script>
+    <script src="guesser_controller.js"/>
   </body>
 </html> 

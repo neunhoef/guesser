@@ -1,55 +1,75 @@
 #!/usr/bin/env nodejs
 
-var fs = require("fs");
+////////////////////////////////////////////////////////////////////////////////
+/// Libraries and database driver
+////////////////////////////////////////////////////////////////////////////////
 
-// Make sure we have the collection available:
+var fs = require("fs");
+var concat = require("concat-stream");
 var arango = require("arango");
-var db = new arango.Connection("http://localhost:8529");
-var questions = null;
-var promise = db.collection.get("dev_guesser_questions")
-  .then(function(q) { questions = q; },
-        function(q) { console.error("Cannot find collection."); });
-                      // process.exit(1); });
+var db = new arango.Connection("http://localhost:8529"); // configure server
+db = db.use("/_system");                                 // configure database
+var collectionName = "dev_guesser_questions";            // configure collection
+
+////////////////////////////////////////////////////////////////////////////////
+/// An express app:
+////////////////////////////////////////////////////////////////////////////////
 
 var express = require('express');
 var app = express();
 
-app.get('/', function (req, res) {
-  res.send('Hello World!')
+////////////////////////////////////////////////////////////////////////////////
+/// Static content:
+////////////////////////////////////////////////////////////////////////////////
+
+function installStatic (filename, contenttype) {
+  app.get("/"+filename, function (req, res) {
+    res.type(contenttype);
+    res.sendFile(filename, {root: "."});
+  });
+}
+
+installStatic("index.html", "text/html");
+installStatic("bg.png", "image/png");
+installStatic("base.css", "text/css");
+installStatic("angular.min.js", "application/javascript");
+installStatic("guesser_controller.js", "application/javascript");
+
+////////////////////////////////////////////////////////////////////////////////
+/// AJAX services:
+////////////////////////////////////////////////////////////////////////////////
+
+app.get("/get/:key", function (req, res) {
+  var key = req.param("key");
+  console.log("/get called, key is ", key);
+  db.document.get(collectionName+"/"+key)
+    .done( function(data) {
+             res.json(data);
+           },
+           function(err) {
+             res.json(err);
+           } );
 });
 
-app.get('/index.html', function (req, res) {
-  res.sendFile("index.html", {root: "."});
+// This is just a trampoline to the Foxx app:
+app.put("/put", function (req, res) {
+  console.log("Content-Type of request is:", req.get("Content-Type"));
+  req.pipe(concat( function(body) {
+    console.log("/put called with argument ", JSON.stringify(body.toString()));
+    db.put("/dev/guesser/put", JSON.parse(body.toString()))
+      .done(function(result) {
+        console.log("Result is", JSON.stringify(result));
+        res.send(result);
+      });
+  }));
 });
 
-app.get('/bg.png', function (req, res) {
-  res.set("Content-Type", "image/png");
-  res.sendFile("bg.png", {root: "."});
-});
-
-app.get('/base.css', function (req, res) {
-  res.set("Content-Type", "text/css");
-  res.sendFile("base.css", {root: "."});
-});
-
-app.get('/angular.min.js', function (req, res) {
-  res.set("Content-Type", "appication/javascript");
-  res.sendFile("angular.min.js", {root: "."});
-});
-
-app.get('/get/:key', function (req, res) {
-  if (questions === null) {
-    throw "No contact to database.";
-  }
-  var key = req.parameter["key"];
-  console.log("key is ", key);
-
-});
+////////////////////////////////////////////////////////////////////////////////
+/// Now finally make the server:
+////////////////////////////////////////////////////////////////////////////////
 
 var server = app.listen(8000, function () {
   var host = server.address().address
   var port = server.address().port
-
   console.log('Example app listening at http://%s:%s', host, port)
-})
-
+});
