@@ -17,7 +17,7 @@
         <h2>Welcome, think of a thing or an animal, I will try to
           guess it!</h3>
 
-      <p>But first, enter your name: <input type="text" ng-model="name">,
+      <p>But first, enter your name: <input type="text" ng-model="name"/>,
       and click <button ng-click="update()">Start</button> when you are
       ready.</p>
       </div>
@@ -48,12 +48,30 @@
 
       <!-- Fourth view, the learning screen: -->
       <div ng-show="view === 'learning'">
+        <h2>{{name}}, OK, you won. Now please help me to learn.</h2>
 
+        <p>What was it you thought of?
+        <input type="text" ng-model="userThing"/></p>
+        <p>Please give me a question that distinguishes {{oldThing}}
+           and {{userThing}}:
+        <input type="text" ng-model="userQuestion"/></p>
+        <p>The answer for {{oldThing}} is:
+        <input type="text" ng-model="answerOld"/>
+        The answer for {{userThing}} is:
+        <input type="text" ng-model="answerNew"/></p>
+        <p ng-show="! confirmed">
+        <button ng-click="submit()">Submit this</button></p>
+
+        <div ng-show="confirmed">
+          <p>Thank you very much, your new question has been
+          submitted. Click
+          <button ng-click="restart()">here</button> to play again.</p>
+        </div>
       </div>
     </div>
     <script>
       function myController($scope, $http) {
-        $scope.baseurl = "http://localhost:8529/_db/_system/dev/guesser/";
+        $scope.baseurl = "http://192.168.10.116:8529/_db/_system/dev/guesser/";
         $scope.name = "";
 
         $scope.restart = function () {
@@ -87,10 +105,6 @@
           }
         }
 
-        $scope.yes = function () {
-          $scope.guessedRight = true;
-        }
-
         $scope.answer = function (newkey) {
           $http.get($scope.baseurl + "get/"+newkey)
             .success(function(response) {
@@ -105,24 +119,52 @@
                    });
         }
           
-        $scope.addEntry = function () {
-          var n = {id:$scope.newid, value:$scope.newvalue};
-          var promise = $http["post"]($scope.baseurl + "newentry", n);
-          promise.success(function(response) {
-                            if (response.error !== false) {
-                              alert(JSON.stringify(response));
-                            }
-                            else {
-                              n._key = response._key;
-                              $scope.list.push(n);
-                            }
-                          });
-          promise.error(function(response) {
-                          alert("AJAX call to add element failed");
-                        });
-          $scope.newid = "";
-          $scope.newvalue = "";
-        };
+        $scope.yes = function () {
+          $scope.guessedRight = true;
+        }
+
+        $scope.no = function () {
+          $scope.oldThing = $scope.current.guess;
+          $scope.userThing = "";
+          $scope.userQuestion = "";
+          $scope.answerOld = "";
+          $scope.answerNew = "";
+          $scope.confirmed = false;
+          $scope.view = "learning";
+        }
+
+        $scope.submit = function () {
+          if ($scope.userQuestion[$scope.userQuestion.length-1] !== "?") {
+            $scope.userQuestion += "?";
+          }
+          var a = { oldLeaf: $scope.current._key,
+                    newQuestion: {
+                      question: $scope.userQuestion,
+                      answer1:  $scope.answerOld,
+                      answer2:  $scope.answerNew,
+                      goto1:    $scope.current._key,
+                      isLeaf:   false
+                    },
+                    newLeaf: { 
+                      isLeaf: true,
+                      guess: $scope.userThing
+                    }
+                  };
+          $http.put($scope.baseurl + "put", a)
+            .success(function(response) {
+                       console.log(response);
+                       if (response.error === true) {
+                         alert("Could not submit new question!");
+                       }
+                       else {
+                         $scope.confirmed = true;
+                       }
+                     })
+            .error(function(response) {
+                     console.log(response);
+                     alert("AJAX call failed, cannot update");
+                   });
+        }
       }
     </script>
   </body>
