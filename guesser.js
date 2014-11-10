@@ -14,7 +14,7 @@
   var collName = applicationContext.collectionName("questions");
   var coll = applicationContext.collection("questions");
 
-  // Get all current entries:
+  // Get an entry:
   controller.get('/get/:key', function (req, res) {
     log("get/"+req.urlParameters["key"]+" called");
     var d;
