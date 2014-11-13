@@ -1,9 +1,9 @@
 {
   "name": "guesser",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "a guessing game that learns",
   "scripts": {
-    "start": "nodejs guesser_server.js"
+    "start": "node guesser_server.js"
   },
   "repository": {
     "type": "git",
