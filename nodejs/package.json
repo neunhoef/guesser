@@ -1,0 +1,39 @@
+{
+  "name": "guesser",
+  "version": "1.0.0",
+  "description": "a guessing game that learns",
+  "scripts": {
+    "start": "guesser_server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/neunhoef/guesser_node"
+  },
+  "keywords": [
+    "guessing",
+    "game",
+    "learning",
+    "binary",
+    "tree",
+    "ArangoDB"
+  ],
+  "author": {
+    "name": "Max Neunhoeffer",
+    "email": "m.neunhoeffer@arangodb.com",
+    "url": "http://www-groups.mcs.st-and.ac.uk/~neunhoef"
+  },
+  "license": "Apache 2.0",
+  "bugs": {
+    "url": "https://github.com/neunhoef/guesser_node/issues"
+  },
+  "dependencies": {
+    "express": "~4.10.2",
+    "concat-stream": "~1.4.6",
+    "arangojs": "~2.0.2"
+  },
+  "files": [
+    "guesser_server.js",
+    "static",
+    "package.json"
+  ]
+}

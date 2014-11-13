@@ -6,7 +6,7 @@
 
 var fs = require("fs");
 var concat = require("concat-stream");
-var arango = require("arango");
+var arango = require("arangojs");
 var db = new arango.Connection("http://localhost:8529"); // configure server
 db = db.use("/_system");                                 // configure database
 var collectionName = "guesser_questions";                // configure collection
