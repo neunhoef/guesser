@@ -1,6 +1,6 @@
 {
   "name": "guesser",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "a guessing game that learns",
   "scripts": {
     "start": "node guesser_server.js"
