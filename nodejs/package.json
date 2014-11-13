@@ -1,13 +1,13 @@
 {
   "name": "guesser",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "a guessing game that learns",
   "scripts": {
-    "start": "guesser_server.js"
+    "start": "nodejs guesser_server.js"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/neunhoef/guesser_node"
+    "url": "https://github.com/neunhoef/guesser"
   },
   "keywords": [
     "guessing",
@@ -24,7 +24,7 @@
   },
   "license": "Apache 2.0",
   "bugs": {
-    "url": "https://github.com/neunhoef/guesser_node/issues"
+    "url": "https://github.com/neunhoef/guesser/issues"
   },
   "dependencies": {
     "express": "~4.10.2",
