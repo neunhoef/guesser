@@ -29,8 +29,26 @@ Checkout repo at (github)[https://github.com/neunhoef/guesser]
     cp * .htaccess ~/public_html/
 
 and edit `~/public_html/.htaccess` to adjust the `RewriteBase` with
-the correct username. Then restart apache2 and visit:
+the correct username. Then get the composer.shar and install the 
+dependencies:
+
+    curl -sS https://getcomposer.org/installer | php
+
+say in your homedirectory. This gives you a file `composer.shar`.
+
+Now, in `~/public_html`, do:
+
+    php ../composer.shar install
+
+which installs all the dependencies.
+
+Finally restart apache2:
+
+    sudo service apache2 restart
+
+and visit
 
     http://<YOURHOST>/~<YOURUSERNAME>/index.html
 
+with a browser.
 
