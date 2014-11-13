@@ -29,11 +29,12 @@ function installStatic (route, filename, contenttype) {
   });
 }
 
-installStatic("/", "index.html", "text/html");
-installStatic("/index.html", "index.html", "text/html");
-installStatic("/base.css", "base.css", "text/css");
-installStatic("/angular.min.js", "angular.min.js", "application/javascript");
-installStatic("/guesser_controller.js", "guesser_controller.js", 
+installStatic("/", "static/index.html", "text/html");
+installStatic("/index.html", "static/index.html", "text/html");
+installStatic("/base.css", "static/base.css", "text/css");
+installStatic("/angular.min.js", "static/angular.min.js", 
+              "application/javascript");
+installStatic("/guesser_controller.js", "static/guesser_controller.js", 
               "application/javascript");
 
 ////////////////////////////////////////////////////////////////////////////////
