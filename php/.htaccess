@@ -1,0 +1,4 @@
+RewriteEngine On
+RewriteBase /~neunhoef/
+RewriteRule ^get/(.*)$ guesser_service.php/get/$1 [L]
+RewriteRule ^put$ guesser_service.php/put [L]

@@ -1,0 +1,15 @@
+{
+    "name": "neunhoef/guesserphp",
+    "description": "PHP version of guesser game",
+    "require": {
+        "slim/slim": "~2.4",
+        "triagens/arangodb": "~2.0"
+    },
+    "license": "Apache 2.0",
+    "authors": [
+        {
+            "name": "Max Neunhoeffer",
+            "email": "m.neunhoeffer@triagens.de"
+        }
+    ]
+}
