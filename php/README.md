@@ -11,9 +11,19 @@ Do
     sudo a2enmod userdir
 
 Add "PUT" to the "Limit" and "LimitExcept" list of methods in
-`userdir.conf` to allow PUT requests
+`userdir.conf` to allow PUT requests.
 
-checkout repo at (github)[https://github.com/neunhoef/guesser]
+Edit `php5.conf` and comment out the part
+
+    <IfModule mod_userdir.c>
+        <Directory /home/*/public_html>
+            php_admin_value engine Off
+        </Directory>
+    </IfModule>
+
+to allow for PHP scripts in user home directories' web pages.
+
+Checkout repo at (github)[https://github.com/neunhoef/guesser]
 
     cd guesser/php
     cp * .htaccess ~/public_html/
@@ -22,4 +32,5 @@ and edit `~/public_html/.htaccess` to adjust the `RewriteBase` with
 the correct username. Then restart apache2 and visit:
 
     http://<YOURHOST>/~<YOURUSERNAME>/index.html
+
 
